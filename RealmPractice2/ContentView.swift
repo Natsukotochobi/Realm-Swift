@@ -23,7 +23,7 @@ struct RoundedButtonStyle: ButtonStyle {
 
 struct ContentView: View {
     @State var inputTitle: String = ""
-    @State var toDoList = ["猫に餌をやる", "雨戸を開ける", "洗濯をする"]
+    @StateObject private var viewModel = ToDoViewModel()
     
     
     var body: some View {
@@ -36,7 +36,7 @@ struct ContentView: View {
             
             Button(action: {
                 if !inputTitle.isEmpty {
-                    toDoList.append(inputTitle)
+                    viewModel.addToDo(title: inputTitle)
                     inputTitle = ""
                 } 
             }, label: {
@@ -45,18 +45,14 @@ struct ContentView: View {
             .buttonStyle(RoundedButtonStyle())
             
             List {
-                ForEach(toDoList, id: \.self) { toDo in
-                    Text(toDo)
+                ForEach(viewModel.toDoList) { toDo in
+                    Text(toDo.title)
                 } // ForEach
-                .onDelete(perform: deleteTitles)
+                .onDelete(perform: viewModel.deleteToDos)
             } // List
         } // VStack
         
     } // body
-    
-    func deleteTitles(at offsets: IndexSet) {
-        toDoList.remove(atOffsets: offsets)
-    }
 } // ContentView
 
 #Preview {
